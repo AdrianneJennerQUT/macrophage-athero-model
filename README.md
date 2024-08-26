@@ -3,8 +3,8 @@ Then download "Makefile-default" and save in the "sample_projects folder" overwr
 
 To run, open your command line and change directory into the PhysiCell folder, then run: 
 
-make reset
-make simple-macrophage-model-sample
+make reset,
+make simple-macrophage-model-sample,
 make
 
 if on windows, then type 
