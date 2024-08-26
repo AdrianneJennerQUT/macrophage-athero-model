@@ -85,7 +85,6 @@ using namespace PhysiCell;
 
 int main( int argc, char* argv[] )
 {
-
 	// load and parse settings file(s)
 	
 	bool XML_status = false; 
@@ -150,7 +149,7 @@ int main( int argc, char* argv[] )
 
 	// for simplicity, set a pathology coloring function 
 	
-	std::vector<std::string> (*cell_coloring_function)(Cell*) = coloring_function; 
+	std::vector<std::string> (*cell_coloring_function)(Cell*) = viral_coloring_function_bar; 
 	
 	sprintf( filename , "%s/initial.svg" , PhysiCell_settings.folder.c_str() ); 
 	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
@@ -211,7 +210,9 @@ int main( int argc, char* argv[] )
 					PhysiCell_globals.SVG_output_index++; 
 					PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
 				}
-				 
+				
+				std::vector<double> total_substrates = integrate_total_substrates(); 
+				std::cout << "Total virion " << total_substrates[0] << std::endl; 
 			}
 
 			// update the microenvironment
@@ -220,10 +221,9 @@ int main( int argc, char* argv[] )
 			// run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
 			
-			
-			//macrophage arrival/entry model evaluated every minute
-			macrophage_arrival( diffusion_dt );
-		
+			/*
+			  Custom add-ons could potentially go here. 
+			*/
 			
 			PhysiCell_globals.current_time += diffusion_dt;
 		}

@@ -71,11 +71,13 @@
 using namespace BioFVM; 
 using namespace PhysiCell;
 
+void epithelial_cell_phenotype( Cell* pCell , Phenotype& phenotype , double dt ); 
 void macrophage_cell_phenotype( Cell* pCell , Phenotype& phenotype , double dt ); 
 
 // custom cell phenotype functions could go here 
 
 void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt );
+void epithelial_function( Cell* pCell, Phenotype& phenotype, double dt );
 
 // setup functions to help us along 
 
@@ -87,10 +89,10 @@ void setup_microenvironment( void );
 
 // custom pathology coloring function 
 
-std::vector<std::string> coloring_function( Cell* pCell );
+std::vector<std::string> my_coloring_function( Cell* );
+std::vector<std::string> viral_coloring_function( Cell* pCell );
+std::vector<std::string> viral_coloring_function_bar( Cell* pCell );
 
 std::vector<double> integrate_total_substrates( void ); 
 
 void avoid_boundaries( Cell* pCell , Phenotype& phenotype, double dt ); 
-
-void macrophage_arrival( double dt );
