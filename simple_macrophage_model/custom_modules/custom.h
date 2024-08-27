@@ -82,6 +82,5 @@ void setup_microenvironment( void );
 
 std::vector<std::string> coloring_function( Cell* pCell );
 
-std::vector<double> integrate_total_substrates( void ); 
-
 void macrophage_arrival( double dt );
+

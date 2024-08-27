@@ -88,10 +88,11 @@ void create_cell_types( void )
 	initialize_cell_definitions_from_pugixml(); 
 		
 	Cell_Definition* pMacrophage = find_cell_definition( "macrophage" ); 
-		
-	pMacrophage->phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "macrophage_relative_adhesion" ); 
+	
 	pMacrophage->functions.update_phenotype = macrophage_function; 
-
+	
+	pMacrophage->phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "macrophage_relative_adhesion" ); 
+	
 	build_cell_definitions_maps(); 
 
 	setup_signal_behavior_dictionaries(); 	
@@ -117,14 +118,13 @@ void setup_tissue( void )
 	// initialise one macrophage at the top of the domain
 	Cell* pC;
 	Cell_Definition* pCD = find_cell_definition( "macrophage" );
-	pCD = find_cell_definition( "macrophage" );
 	
 	// set initial x and y position for cell
 	double x = 0;
 	double y = 140;
 	pC = create_cell( *pCD ); 
 	pC->assign_position( x,y, 0.0 );
-			
+		
 	return; 
 }
 
@@ -182,40 +182,37 @@ std::vector<Cell*> get_possible_neighbors( Cell* pCell )
 
 void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 {
-	// bookkeeping 
-	static Cell_Definition* pMacrophage = find_cell_definition( "macrophage" ); 
-	double lipid = pCell->phenotype.molecular.internalized_total_substrates[lipid];
-	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	
+	// bookkeeping 
+	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
+	static int lipid_index = microenvironment.find_density_index( "lipid" ); 
+		
 	double u_max = parameters.doubles("u_max"); // max lipid uptake rate
 	double lipid_half = parameters.doubles("lipid_half"); // lipid uptake half-effect 	
-	double lipid_internal = pCell->phenotype.molecular.internalized_total_substrates[lipid];
-		
-	//std::cout<<"my internal lipid is: "<<lipid_internal<<std::endl;
+	double lipid_internal = pCell->phenotype.molecular.internalized_total_substrates[lipid_index];
+	
 	// check my internal lipid and if it's above a certain threshold, stop uptaking lipid and become apoptotic
-	/*if( lipid_internal> parameters.doubles("lipid_threshold"))
+	if( lipid_internal> parameters.doubles("lipid_threshold"))
 	{
 		std::cout<<"I died from eating too much"<<std::endl;
 		pCell->start_death( apoptosis_model_index );
 		pCell->functions.update_phenotype = NULL; 
 	}	
-	else 
-	{}// set my lipid uptake rate to be a function of my internal lipid
-	
-	
+		
 	// check how much lipid I've take up and based on that, change my speed
 	double max_speed = parameters.doubles("macrophage_max_speed");
 	double speed_threshold = parameters.doubles("macrophage_speed_threshold");
 	
+	
 	if( lipid_internal<speed_threshold )
 	{
-		//set_single_behavior( pCell, "migration speed" , max_speed-max_speed*lipid_internal/speed_threshold ); 
-		//std::cout<<"my new speed is: "<<max_speed-max_speed*lipid_internal/speed_threshold<<std::endl;
+		double new_speed = max_speed-max_speed*lipid_internal/speed_threshold;
+		set_single_behavior( pCell, "migration speed" , new_speed ); 
 	}
 	else
 	{
 		//set_single_behavior( pCell, "migration speed" ,0);
-	}*/
+	}
 	
 	// check for contact with a cell and then see if I eat that cell
 	Cell* pTestCell = NULL; 
@@ -252,28 +249,6 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	
 	return; 
-}
-
-std::vector<double> integrate_total_substrates( void )
-{
-	// start with 0 vector 
-	std::vector<double> out( microenvironment.number_of_densities() , 0.0 ); 
-
-	// integrate extracellular substrates 
-	for( unsigned int n = 0; n < microenvironment.number_of_voxels() ; n++ )
-	{
-		// out = out + microenvironment(n) * dV(n) 
-		axpy( &out , microenvironment.mesh.voxels[n].volume , microenvironment(n) ); 
-	}
-
-	// inte
-	for( unsigned int n=0; n < (*all_cells).size(); n++ )
-	{
-		Cell* pC = (*all_cells)[n];
-		out += pC->phenotype.molecular.internalized_total_substrates;
-	}
-	
-	return out; 
 }
 
 void macrophage_arrival( double dt )

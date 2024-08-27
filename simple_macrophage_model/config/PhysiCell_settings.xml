@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">6880</max_time> 
+		<max_time units="min">4880</max_time> 
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -125,12 +125,12 @@
 	</options>
 
 	<microenvironment_setup><!-- this means PDE -->
-		<variable name="lipid" units="dimensionless" ID="1">
+		<variable name="lipid" units="dimensionless" ID="0">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">0</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">1e-3</diffusion_coefficient>
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="dimensionless">10</initial_condition>
+			<initial_condition units="dimensionless">0.1</initial_condition>
 			<Dirichlet_boundary_condition units="dimensionless" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
@@ -149,7 +149,7 @@
 	</microenvironment_setup>	
 	
 	<cell_definitions><!-- this is the cells -->
-		<cell_definition name="macrophage" ID="0" visible="true">
+		<cell_definition name="macrophage" ID="0"> <!-- visible="true" -->
 			<phenotype>
 				<cycle code="5" name="live"> <!-- this is the proliferation model -->
 					<phase_transition_rates units="1/min">
@@ -161,7 +161,7 @@
 					<model code="100" name="apoptosis"> <!-- this is the apoptosis death model -->
 						<death_rate units="1/min">0.00002</death_rate>
 						<phase_durations units="min">
-							<duration index="0" fixed_duration="true">1516</duration>
+							<duration index="0" fixed_duration="true">5516</duration>
 						</phase_durations>
 						<parameters>
 							<unlysed_fluid_change_rate units="1/min">0.5e-06</unlysed_fluid_change_rate>
@@ -201,12 +201,12 @@
 				</mechanics>
 				
 				<motility>  
-					<speed units="micron/min">1</speed>
+					<speed units="micron/min">2</speed>
 					<persistence_time units="min">15</persistence_time>
 					<migration_bias units="dimensionless">0.0</migration_bias>
 					
 					<options>
-						<enabled>true</enabled>
+						<enabled>true</enabled><!-- changed from true -->
 						<use_2D>true</use_2D>
 						<chemotaxis>
 							<enabled>false</enabled>
@@ -219,8 +219,8 @@
 				<secretion> <!-- this is where we say how cells interact with PDE -->
 					<substrate name="lipid">
 						<secretion_rate units="1/min">0</secretion_rate>
-						<secretion_target units="substrate density">100</secretion_target>
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+						<uptake_rate units="1/min">0.008</uptake_rate>
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
 					</substrate>  
 				</secretion>
@@ -250,9 +250,9 @@
 		<prob_engulf type="double" units="dimensionless">1</prob_engulf>
 		<u_max type="double" units="dimensionless">0.01</u_max>
 		<lipid_half type="double" units="dimensionless">1000</lipid_half> 
-		<lipid_threshold type="double" units="dimensionless">600</lipid_threshold> 
-		<macrophage_max_speed type="double" units="dimensionless">1</macrophage_max_speed> 
-		<macrophage_speed_threshold type="double" units="dimensionless">200</macrophage_speed_threshold> 
+		<lipid_threshold type="double" units="dimensionless">400</lipid_threshold> 
+		<macrophage_max_speed type="double" units="dimensionless">2</macrophage_max_speed> 
+		<macrophage_speed_threshold type="double" units="dimensionless">350</macrophage_speed_threshold> 
 		
 	</user_parameters>
 	
