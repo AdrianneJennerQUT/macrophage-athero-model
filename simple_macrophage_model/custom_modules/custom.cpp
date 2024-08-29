@@ -87,11 +87,14 @@ void create_cell_types( void )
 		
 	initialize_cell_definitions_from_pugixml(); 
 		
-	Cell_Definition* pMacrophage = find_cell_definition( "macrophage" ); 
+	Cell_Definition* pMacrophage_C1 = find_cell_definition( "macrophage C1" ); 
+	Cell_Definition* pMacrophage_C2 = find_cell_definition( "macrophage C2" ); 
 	
-	pMacrophage->functions.update_phenotype = macrophage_function; 
+	pMacrophage_C1->functions.update_phenotype = macrophage_function; 
+	pMacrophage_C1->phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "macrophage_relative_adhesion" ); 
 	
-	pMacrophage->phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "macrophage_relative_adhesion" ); 
+	pMacrophage_C2->functions.update_phenotype = macrophage_function; 
+	pMacrophage_C2->phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "macrophage_relative_adhesion" ); 
 	
 	build_cell_definitions_maps(); 
 
@@ -117,14 +120,21 @@ void setup_tissue( void )
 	
 	// initialise one macrophage at the top of the domain
 	Cell* pC;
-	Cell_Definition* pCD = find_cell_definition( "macrophage" );
+	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
+	static Cell_Definition* pCD_mac_C2 = find_cell_definition( "macrophage C2"); 
 	
 	// set initial x and y position for cell
-	double x = 0;
+	double x = 50;
 	double y = 140;
-	pC = create_cell( *pCD ); 
+	pC = create_cell( *pCD_mac_C1 ); 
 	pC->assign_position( x,y, 0.0 );
 		
+	// set initial x and y position for cell
+	x = -50;
+	y = 140;
+	pC = create_cell( *pCD_mac_C2 ); 
+	pC->assign_position( x,y, 0.0 );
+	
 	return; 
 }
 
@@ -135,16 +145,24 @@ std::vector<std::string> coloring_function( Cell* pCell )
 	// output[1] = boundary of nucleus colour
 	// output[2] = cytoplasm
 	// output[3] = exterior boundary
-	std::vector<std::string> output = { "blue" , "black" , "blue", "black" }; 
+	std::vector<std::string> output = { "slateblue" , "black" , "slateblue", "black" }; 
+	
+	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
+	static Cell_Definition* pCD_mac_C2 = find_cell_definition( "macrophage C2"); 
 	
 	// check if cell is dead
 	if( pCell->phenotype.death.dead == true )
 	{
 		// if dead, change nucleus and cytoplasm to be red and dark red
-		 output[0] = "red";  
-		 output[2] = "darkred"; 
+		 output[0] = "goldenrod";  
+		 output[2] = "saddlebrown"; 
 		 
 		 return output; 
+	}
+	else if( pCell->type == pCD_mac_C1->type)
+	{
+		 output[0] = "deepskyblue";  
+		 output[2] = "deepskyblue"; 
 	}
 		
 	return output; 
@@ -187,9 +205,20 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	static int lipid_index = microenvironment.find_density_index( "lipid" ); 
 		
+	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
+	
 	double u_max = parameters.doubles("u_max"); // max lipid uptake rate
 	double lipid_half = parameters.doubles("lipid_half"); // lipid uptake half-effect 	
 	double lipid_internal = pCell->phenotype.molecular.internalized_total_substrates[lipid_index];
+	
+	// add individual cell efflux of lipid
+	if( pCell->type == pCD_mac_C1->type)
+	{
+		double s_base = parameters.doubles("base_secretion_rate");
+		pCell->phenotype.molecular.internalized_total_substrates[lipid_index] = lipid_internal - s_base*lipid_internal*dt;
+		lipid_internal = pCell->phenotype.molecular.internalized_total_substrates[lipid_index];
+	
+	}
 	
 	// check my internal lipid and if it's above a certain threshold, stop uptaking lipid and become apoptotic
 	if( lipid_internal> parameters.doubles("lipid_threshold"))
@@ -247,6 +276,13 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 		}
 	}
 	
+	#pragma omp critical
+	// check if I am near the bottom boundaru
+	if (pCell->position[1]<-130)
+	{
+		std::cout<<"I am free"<<std::endl;
+		delete_cell(pCell);// as cell emigrates from plaque
+	}
 	
 	return; 
 }
@@ -262,6 +298,13 @@ void macrophage_arrival( double dt )
 		std::cout<<"Adding 1 macrophage"<<std::endl;
 		
 		static Cell_Definition* pCD = find_cell_definition( "macrophage" );
+		
+		rand_sample = UniformRandom();
+		if(rand_sample <0.08) // add C1
+		{pCD = find_cell_definition( "macrophage C1" );}
+		else // add C2
+		{pCD = find_cell_definition( "macrophage C2" );}
+		
 		Cell* pC = create_cell( *pCD ); 
 		double length_x = microenvironment.mesh.bounding_box[3] - 
 			microenvironment.mesh.bounding_box[0]; 

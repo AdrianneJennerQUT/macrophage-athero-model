@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">4880</max_time> 
+		<max_time units="min">6880</max_time> 
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -201,8 +201,8 @@
 				</mechanics>
 				
 				<motility>  
-					<speed units="micron/min">2</speed>
-					<persistence_time units="min">15</persistence_time>
+					<speed units="micron/min">1</speed>
+					<persistence_time units="min">5</persistence_time>
 					<migration_bias units="dimensionless">0.0</migration_bias>
 					
 					<options>
@@ -230,6 +230,33 @@
 				 
 			</custom_data>
 		</cell_definition>
+		<cell_definition name="macrophage C1" parent_type="macrophage" ID="1">
+			<phenotype>	
+				<secretion> <!-- this is where we say how cells interact with PDE -->
+					<substrate name="lipid">
+						<secretion_rate units="1/min">0</secretion_rate>
+						<secretion_target units="substrate density">0</secretion_target>
+						<uptake_rate units="1/min">0.008</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate>  
+				</secretion>
+				<molecular />
+			</phenotype>
+		</cell_definition>
+		
+		<cell_definition name="macrophage C2" parent_type="macrophage" ID="2">
+			<phenotype>	
+				<secretion> <!-- this is where we say how cells interact with PDE -->
+					<substrate name="lipid">
+						<secretion_rate units="1/min">0</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+						<uptake_rate units="1/min">0.008</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate>  
+				</secretion>
+				<molecular />
+			</phenotype>
+		</cell_definition>
 		
 		</cell_definitions>
 	
@@ -250,9 +277,10 @@
 		<prob_engulf type="double" units="dimensionless">1</prob_engulf>
 		<u_max type="double" units="dimensionless">0.01</u_max>
 		<lipid_half type="double" units="dimensionless">1000</lipid_half> 
-		<lipid_threshold type="double" units="dimensionless">400</lipid_threshold> 
+		<lipid_threshold type="double" units="dimensionless">500</lipid_threshold> 
 		<macrophage_max_speed type="double" units="dimensionless">2</macrophage_max_speed> 
-		<macrophage_speed_threshold type="double" units="dimensionless">350</macrophage_speed_threshold> 
+		<macrophage_speed_threshold type="double" units="dimensionless">450</macrophage_speed_threshold> 
+		<base_secretion_rate type="double" units="dimensionless">0.01</base_secretion_rate> 
 		
 	</user_parameters>
 	
