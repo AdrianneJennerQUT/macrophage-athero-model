@@ -12,7 +12,10 @@ open(v)
 figure('Position', [50 50 900 700])
 hold on 
 
-for tcount = 1:1146
+total_time = 1100;
+delta_t_cell = 6;
+
+for tcount = 1:1100
         clf
     if tcount<11
         K = [A num2str(tcount-1,'%d') B];
@@ -36,7 +39,7 @@ end
 
 close(v);
 
-time = 1:1146*6;
+time = [1:total_time]*delta_t_cell;
 
 figure
 plot(time,lipid_total)
