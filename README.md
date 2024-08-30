@@ -12,3 +12,5 @@ if on windows, then type
 
 if on mac, then type
 ./simple_macrophage_model_sample
+
+Download the matlab script to plot the video of the microenvironment and save in the "matlab" folder in the main PhysiCell branch.
