@@ -43,12 +43,6 @@ time = [1:total_time]*delta_t_cell;
 
 figure
 plot(time,lipid_total)
-
-% total amount of lipid over time
-% total amount of cells over time of each class 
-% amount of internal lipid
-% amount of internal lipid in dead cells
-% number of dead cells
-
-
-close(v)
+xlabel('Time')
+ylabel('Total lipid')
+set(gca,'FontSize',18)
