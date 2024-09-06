@@ -103,7 +103,7 @@ void create_cell_types( void )
 	
 	// add endogenous lipid			
 	pMacrophage_C1->phenotype.molecular.internalized_total_substrates[lipid_index] = parameters.doubles("endogenous_lipid");
-	pMacrophage_C2->phenotype.molecular.internalized_total_substrates[lipid_index] = parameters.doubles("endogenous_lipid");
+	pMacrophage_C2->phenotype.molecular.internalized_total_substrates[lipid_index] = parameters.doubles("endogenous_lipid");	
 			
 	build_cell_definitions_maps(); 
 
@@ -126,9 +126,35 @@ void setup_microenvironment( void )
 
 void setup_tissue( void )
 {
+	//initialise ghost cells throughout the domain
+	double Xmin = microenvironment.mesh.bounding_box[0]; 
+	double Ymin = microenvironment.mesh.bounding_box[1]; 
+	double Xmax = microenvironment.mesh.bounding_box[3]; 
+	double Ymax = microenvironment.mesh.bounding_box[4]; 
+	
+	Cell* pC;
+	
+	Cell_Definition* pCD_ghost = find_cell_definition( "ghost"); 
+	double number_x_dir = (Xmax-Xmin)/16;
+	double number_y_dir = (Ymax-Ymin)/16;
+	
+	for( int k=0; k < number_x_dir; k++ )
+	{
+		double x = Xmin + k*16;
+		
+		for( int j = 0; j < number_y_dir; j++)
+		{
+			double y = Ymin + j*16;
+			
+			pC = create_cell( *pCD_ghost ); 
+			pC->assign_position( x,y, 0.0 );
+			pC->is_movable = false; 
+			pC->is_active = false; 				
+		}
+	}
 	
 	// initialise one macrophage at the top of the domain
-	Cell* pC;
+	
 	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
 	static Cell_Definition* pCD_mac_C2 = find_cell_definition( "macrophage C2"); 
 	
@@ -159,6 +185,8 @@ std::vector<std::string> coloring_function( Cell* pCell )
 	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
 	static Cell_Definition* pCD_mac_C2 = find_cell_definition( "macrophage C2"); 
 	
+	static Cell_Definition* pCD_ghost = find_cell_definition( "ghost"); 
+	
 	// check if cell is dead
 	if( pCell->phenotype.death.dead == true )
 	{
@@ -172,6 +200,11 @@ std::vector<std::string> coloring_function( Cell* pCell )
 	{
 		 output[0] = "deepskyblue";  
 		 output[2] = "deepskyblue"; 
+	}
+	else if( pCell->type == pCD_ghost->type)
+	{
+		 output[0] = "lightgray";  
+		 output[2] = "lightgray"; 		
 	}
 		
 	return output; 
