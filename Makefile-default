@@ -196,7 +196,22 @@ physimess-sample:
 	cp ./sample_projects/physimess/Makefile .
 	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml 
 	cp -r ./sample_projects/physimess/config/* ./config/
-
+simple-macrophage-model-sample:
+	cp ./sample_projects/simple_macrophage_model/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./sample_projects/simple_macrophage_model/main.cpp ./main.cpp 
+	cp Makefile Makefile-backup
+	cp ./sample_projects/simple_macrophage_model/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml 
+	cp ./sample_projects/simple_macrophage_model/config/* ./config/
+athero-sample:
+	cp ./sample_projects/athero/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./sample_projects/athero/main.cpp ./main.cpp 
+	cp Makefile Makefile-backup
+	cp ./sample_projects/athero/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml 
+	cp ./sample_projects/athero/config/* ./config/
 # ---- intracellular projects 
 ode-energy-sample:
 	cp ./sample_projects_intracellular/ode/ode_energy/custom_modules/* ./custom_modules/
@@ -233,14 +248,7 @@ cancer-metabolism-sample:
 	cp ./sample_projects_intracellular/fba/cancer_metabolism/Makefile ./
 	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml
 	cp ./sample_projects_intracellular/fba/cancer_metabolism/config/* ./config/
-simple-macrophage-model-sample:
-	cp ./sample_projects/simple_macrophage_model/custom_modules/* ./custom_modules/
-	touch main.cpp && cp main.cpp main-backup.cpp
-	cp ./sample_projects/simple_macrophage_model/main.cpp ./main.cpp 
-	cp Makefile Makefile-backup
-	cp ./sample_projects/simple_macrophage_model/Makefile .
-	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml 
-	cp ./sample_projects/simple_macrophage_model/config/* ./config/
+
 	
 
 # early examples for convergence testing 
