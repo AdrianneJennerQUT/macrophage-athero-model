@@ -12,10 +12,7 @@ open(v)
 figure('Position', [50 50 900 700])
 hold on 
 
-total_time = 1100;
-delta_t_cell = 6;
-
-for tcount = 720:720%1:total_time
+for tcount = 1:1146
         clf
     if tcount<11
         K = [A num2str(tcount-1,'%d') B];
@@ -28,7 +25,6 @@ for tcount = 720:720%1:total_time
     end
     M = read_microenvironment( K ); 
     titles{1} = 'lipid';
-    titles{2} = 'lipid';
     plot_microenvironment( M , titles ); 
     
     lipid_total(tcount) = sum(sum(M.data{1}))*20*20;
@@ -40,11 +36,16 @@ end
 
 close(v);
 
-time = [1:total_time]*delta_t_cell;
+time = 1:1146*6;
 
 figure
 plot(time,lipid_total)
-xlabel('Time')
-ylabel('Total lipid')
-set(gca,'FontSize',22)
 
+% total amount of lipid over time
+% total amount of cells over time of each class 
+% amount of internal lipid
+% amount of internal lipid in dead cells
+% number of dead cells
+
+
+close(v)

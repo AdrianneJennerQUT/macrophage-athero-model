@@ -24,18 +24,21 @@ for tcount = 1:total_time
 %MCDS = read_MultiCellDS_xml( K , '../output');
 MCDS = read_MultiCellDS_xml_dbergman( K , '../output');
 
-cell_types = MCDS.discrete_cells.metadata.type;
-
-mac_C1(tcount) = length(find(cell_types==1));
-mac_C2(tcount) = length(find(cell_types==2));
+cell_types_not_dead = MCDS.discrete_cells.metadata.type;
 
     if isempty(MCDS.discrete_cells.dead_cells==1)
         deadcells(tcount) = 0;
     else
         deadcells(tcount) = length(MCDS.discrete_cells.dead_cells);
+        cell_types_not_dead(MCDS.discrete_cells.dead_cells) = [];
     end
 
-internal_lipid(tcount) = sum(MCDS.discrete_cells.custom.internalized_total_substrates);
+mac_C1(tcount) = length(find(cell_types_not_dead==1));
+mac_C2(tcount) = length(find(cell_types_not_dead==2));
+
+not_ghost_cells = find(MCDS.discrete_cells.metadata.type~=3);
+
+internal_lipid(tcount) = sum(MCDS.discrete_cells.custom.internalized_total_substrates(not_ghost_cells));
 
 end
 
@@ -46,25 +49,25 @@ time = [1:total_time]*delta_t_cell;
 figure
 subplot(2,2,1)
 hold on 
-plot(time, mac_C1)
+plot(time, mac_C1,'LineWidth',2)
 ylabel('C1 macs')
 set(gca,'FontSize',14)
 
 subplot(2,2,2)
 hold on
-plot(time, mac_C2)
+plot(time, mac_C2,'LineWidth',2)
 ylabel('C2 macs')
 set(gca,'FontSize',14)
 
 subplot(2,2,3)
 hold on
-plot(time, deadcells)
+plot(time, deadcells,'LineWidth',2)
 ylabel('Dead cells')
 set(gca,'FontSize',14)
 
 subplot(2,2,4)
 hold on
-plot(time, internal_lipid./(mac_C1+mac_C2))
+plot(time, internal_lipid./(mac_C1+mac_C2+deadcells),'LineWidth',2)
 ylabel('Avg. internal lipid')
 set(gca,'FontSize',14)
 
