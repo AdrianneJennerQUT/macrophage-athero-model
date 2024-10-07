@@ -86,3 +86,4 @@ void macrophage_arrival( double dt );
 
 void nibble_cell( Cell* pCell_to_eat, Cell* pCell );
 
+void ghost_secretion_model( Cell* pCell, Phenotype& phenotype, double dt );

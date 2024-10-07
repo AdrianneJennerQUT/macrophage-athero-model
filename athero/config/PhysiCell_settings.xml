@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-500</x_min>
-		<x_max>500</x_max>
-		<y_min>-150</y_min>
-		<y_max>150</y_max>
+		<x_min>0</x_min>
+		<x_max>1000</x_max>
+		<y_min>0</y_min>
+		<y_max>300</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -130,9 +130,9 @@
 				<diffusion_coefficient units="micron^2/min">1e-3</diffusion_coefficient>
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="dimensionless">0.0</initial_condition>
-			<Dirichlet_boundary_condition units="dimensionless" enabled="false">0</Dirichlet_boundary_condition>
-		</variable>
+			<initial_condition units="dimensionless">0</initial_condition>
+		<Dirichlet_boundary_condition units="dimensionless" enabled="false">0</Dirichlet_boundary_condition>
+        </variable>
 		
 		<options>
 			<calculate_gradients>true</calculate_gradients>
@@ -231,6 +231,34 @@
 			</custom_data>
 		</cell_definition>
 		
+		<cell_definition name="macrophage C1" parent_type="macrophage" ID="1">
+			<phenotype>	
+				<secretion> <!-- this is where we say how cells interact with PDE -->
+					<substrate name="lipid">
+						<secretion_rate units="1/min">0</secretion_rate>
+						<secretion_target units="substrate density">0</secretion_target>
+						<uptake_rate units="1/min">0.008</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate>  
+				</secretion>
+				<molecular />
+			</phenotype>
+		</cell_definition>
+		
+		<cell_definition name="macrophage C2" parent_type="macrophage" ID="2">
+			<phenotype>	
+				<secretion> <!-- this is where we say how cells interact with PDE -->
+					<substrate name="lipid">
+						<secretion_rate units="1/min">0</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+						<uptake_rate units="1/min">0.008</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate>  
+				</secretion>
+				<molecular />
+			</phenotype>
+		</cell_definition>
+		
 		<cell_definition name="ghost" ID="3"> <!-- visible="true" -->
 			<phenotype>
 				<cycle code="5" name="live"> <!-- this is the proliferation model -->
@@ -300,7 +328,7 @@
 				
 				<secretion> <!-- this is where we say how cells interact with PDE -->
 					<substrate name="lipid">
-						<secretion_rate units="1/min">0</secretion_rate>
+						<secretion_rate units="1/min">0.001</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
 						<uptake_rate units="1/min">0</uptake_rate>
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
@@ -312,36 +340,9 @@
 				 
 			</custom_data>
 		</cell_definition>
-		<cell_definition name="macrophage C1" parent_type="macrophage" ID="1">
-			<phenotype>	
-				<secretion> <!-- this is where we say how cells interact with PDE -->
-					<substrate name="lipid">
-						<secretion_rate units="1/min">0</secretion_rate>
-						<secretion_target units="substrate density">0</secretion_target>
-						<uptake_rate units="1/min">0.008</uptake_rate>
-						<net_export_rate units="total substrate/min">0</net_export_rate> 
-					</substrate>  
-				</secretion>
-				<molecular />
-			</phenotype>
-		</cell_definition>
-		
-		<cell_definition name="macrophage C2" parent_type="macrophage" ID="2">
-			<phenotype>	
-				<secretion> <!-- this is where we say how cells interact with PDE -->
-					<substrate name="lipid">
-						<secretion_rate units="1/min">0</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0.008</uptake_rate>
-						<net_export_rate units="total substrate/min">0</net_export_rate> 
-					</substrate>  
-				</secretion>
-				<molecular />
-			</phenotype>
-		</cell_definition>
 		
 		</cell_definitions>
-	
+		
 	<initial_conditions>
 		<cell_positions type="csv" enabled="false">
 			<folder>./config</folder>
@@ -354,7 +355,7 @@
 		<macrophage_relative_adhesion type="double" units="dimensionless">0.05</macrophage_relative_adhesion>
 		
 		<macrophage_arrival_rate type="double" units="cells/min">0.003</macrophage_arrival_rate>
-		<min_y_entry type="double" units="micron">80</min_y_entry>
+		<min_y_entry type="double" units="micron">250</min_y_entry>
 		<prob_engulf type="double" units="dimensionless">1</prob_engulf>
 		<u_max type="double" units="dimensionless">0.01</u_max>
 		<lipid_half type="double" units="dimensionless">1000</lipid_half> 
@@ -362,8 +363,10 @@
 		<macrophage_max_speed type="double" units="dimensionless">2</macrophage_max_speed> 
 		<macrophage_speed_threshold type="double" units="dimensionless">450</macrophage_speed_threshold> 
 		<base_secretion_rate type="double" units="dimensionless">0.01</base_secretion_rate> 
+		<base_secretion_rate_ghosts type="double" units="dimensionless">0.01</base_secretion_rate_ghosts> 
 		<endogenous_lipid type="double" units="dimensionless">5</endogenous_lipid>
 		<prob_lineage_class type="double" units="dimensionless">0.92</prob_lineage_class>
+		<base_secretion_target type="double" units="dimensionless">0.1</base_secretion_target>
 	</user_parameters>
 	
 </PhysiCell_settings>

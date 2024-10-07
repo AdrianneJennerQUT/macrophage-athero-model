@@ -81,16 +81,18 @@ void create_cell_types( void )
 	cell_defaults.functions.update_migration_bias = NULL; 
 	cell_defaults.functions.update_phenotype = NULL; 
 	cell_defaults.functions.custom_cell_rule = NULL; 
+	cell_defaults.functions.contact_function = NULL; 
 	
 	cell_defaults.functions.add_cell_basement_membrane_interactions = NULL; 
 	cell_defaults.functions.calculate_distance_to_membrane = NULL; 
 		
 	initialize_cell_definitions_from_pugixml(); 
-		
+
 	Cell_Definition* pMacrophage_C1 = find_cell_definition( "macrophage C1" ); 
 	Cell_Definition* pMacrophage_C2 = find_cell_definition( "macrophage C2" ); 
 	
 	static int lipid_index = microenvironment.find_density_index( "lipid" ); 		 
+	
 	
 	pMacrophage_C1->functions.update_phenotype = macrophage_function; 
 	pMacrophage_C1->phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "macrophage_relative_adhesion" ); 
@@ -104,6 +106,13 @@ void create_cell_types( void )
 	// add endogenous lipid			
 	pMacrophage_C1->phenotype.molecular.internalized_total_substrates[lipid_index] = parameters.doubles("endogenous_lipid");
 	pMacrophage_C2->phenotype.molecular.internalized_total_substrates[lipid_index] = parameters.doubles("endogenous_lipid");	
+						
+	Cell_Definition* pGhost = find_cell_definition( "ghost" ); 
+	pGhost->functions.update_phenotype = ghost_secretion_model; 
+    //pGhost->functions.contact_function = NULL; 	
+	pGhost->phenotype.mechanics.cell_cell_adhesion_strength = 0;
+	pGhost->phenotype.mechanics.cell_cell_repulsion_strength = 0;
+	
 			
 	build_cell_definitions_maps(); 
 
@@ -126,6 +135,8 @@ void setup_microenvironment( void )
 
 void setup_tissue( void )
 {
+	static int lipid_index = microenvironment.find_density_index( "lipid" ); 
+	
 	//initialise ghost cells throughout the domain
 	double Xmin = microenvironment.mesh.bounding_box[0]; 
 	double Ymin = microenvironment.mesh.bounding_box[1]; 
@@ -149,24 +160,29 @@ void setup_tissue( void )
 			pC = create_cell( *pCD_ghost ); 
 			pC->assign_position( x,y, 0.0 );
 			pC->is_movable = false; 
-			pC->is_active = false; 				
+			//pC->is_active = false;
+			
+			//setting unique secretion and saturation density targets based on distance to vessel wall
+			pC->phenotype.secretion.secretion_rates[lipid_index] = parameters.doubles("base_secretion_rate_ghosts")*(Ymax-y)/Ymax;		
+			pC->phenotype.secretion.saturation_densities[lipid_index] = parameters.doubles("base_secretion_target")*(Ymax-y)/Ymax;
 		}
 	}
 	
 	// initialise one macrophage at the top of the domain
-	
 	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
 	static Cell_Definition* pCD_mac_C2 = find_cell_definition( "macrophage C2"); 
 	
 	// set initial x and y position for cell
-	double x = 50;
-	double y = 140;
+	double x = 650;
+	double y = 280;
+	
+	
 	pC = create_cell( *pCD_mac_C1 ); 
 	pC->assign_position( x,y, 0.0 );
 		
 	// set initial x and y position for cell
-	x = -50;
-	y = 140;
+	x = 250;
+	y = 250;
 	pC = create_cell( *pCD_mac_C2 ); 
 	pC->assign_position( x,y, 0.0 );
 	
@@ -182,6 +198,7 @@ std::vector<std::string> coloring_function( Cell* pCell )
 	// output[3] = exterior boundary
 	std::vector<std::string> output = { "slateblue" , "black" , "slateblue", "black" }; 
 	
+	
 	static Cell_Definition* pCD_mac_C1 = find_cell_definition( "macrophage C1"); 
 	static Cell_Definition* pCD_mac_C2 = find_cell_definition( "macrophage C2"); 
 	
@@ -192,28 +209,34 @@ std::vector<std::string> coloring_function( Cell* pCell )
 	{
 		// if dead, change nucleus and cytoplasm to be red and dark red
 		 output[0] = "goldenrod";  
+		 output[1] = "black";
 		 output[2] = "saddlebrown"; 
+		 output[3] = "black";
 		 
 		 return output; 
 	}
 	else if( pCell->type == pCD_mac_C1->type)
 	{
-		 output[0] = "deepskyblue";  
+		 output[0] = "deepskyblue"; 
+		 output[1] = "black";		 
 		 output[2] = "deepskyblue"; 
+		 output[3] = "black";
 	}
 	else if( pCell->type == pCD_ghost->type)
 	{
-		 output[0] = "lightgray";  
-		 output[2] = "lightgray"; 		
+		 output[0] = "white"; 
+		 output[1] = "white";
+		 output[2] = "white";
+		 output[3] = "white"; 	
 	}
-		
+	
 	return output; 
 }
 
 std::vector<Cell*> get_possible_neighbors( Cell* pCell )
 {
 	std::vector<Cell*> neighbors = {}; 
-
+	
 	// First check the neighbors in my current voxel
 	std::vector<Cell*>::iterator neighbor;
 	std::vector<Cell*>::iterator end =
@@ -239,7 +262,12 @@ std::vector<Cell*> get_possible_neighbors( Cell* pCell )
 	
 	return neighbors; 
 }
-
+void ghost_secretion_model( Cell* pCell, Phenotype& phenotype, double dt )
+{
+		
+	return;
+	
+}
 void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	
@@ -258,7 +286,6 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 	// add individual cell efflux of lipid
 	if( pCell->type == pCD_mac_C1->type)
 	{
-		
 		//!! don't secrete my endogenous lipid
 		double s_base = parameters.doubles("base_secretion_rate");
 		pCell->phenotype.molecular.internalized_total_substrates[lipid_index] = lipid_internal - s_base*lipid_internal*dt;
@@ -336,7 +363,7 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	#pragma omp critical
 	// check if I am near the bottom boundaru
-	if (pCell->position[1]<-130)
+	if (pCell->position[1]<30)
 	{
 		std::cout<<"I am free"<<std::endl;
 		delete_cell(pCell);// as cell emigrates from plaque
@@ -347,6 +374,7 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 
 void macrophage_arrival( double dt )
 {
+
 	// sampling a random number from U(0,1)
 	double rand_sample = UniformRandom();
 	
@@ -384,6 +412,7 @@ void macrophage_arrival( double dt )
 
 void nibble_cell( Cell* pCell_to_eat, Cell* pCell )
 {
+	
 	// don't ingest self 
 	if( pCell_to_eat == pCell )
 	{ return; } 
@@ -403,6 +432,7 @@ void nibble_cell( Cell* pCell_to_eat, Cell* pCell )
 		{ std::cout << this->type_name << " (" << this << ")" << " eats live " << pCell_to_eat->type_name << " (" << pCell_to_eat 
 			<< ") of size " << pCell_to_eat->phenotype.volume.total << std::endl; }
 		*/
+
 
 		// mark cell to eat as dead 
 		pCell_to_eat->phenotype.death.dead = true; 
@@ -529,6 +559,7 @@ void nibble_cell( Cell* pCell_to_eat, Cell* pCell )
 	
 	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	pCell->start_death( apoptosis_model_index );
+	
 	
 	return; 
 }
