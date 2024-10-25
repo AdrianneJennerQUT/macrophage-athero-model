@@ -7,10 +7,9 @@ This code accompanies the manuscript *"Investigating atherosclerotic plaque deve
 <sup>5</sup>Ludwig Institute for Cancer Research, The University of Oxford, Oxford, UK,
 <sup>6</sup> School of Mathematics and Statistics, The University of Sydney, Sydney, Australia,
 
-![ControlGrowth](https://user-images.githubusercontent.com/85978071/152262842-950fbb47-dcd1-4da0-9c19-1c6bae2230b0.png)
+![ModelSchematic_draft](https://github.com/user-attachments/assets/aa56fb2e-1c42-442d-9505-701f4c024494)
 
-In this repository are two ABM models built in PhysiCell for atherosclerotic plaque developement. The firs is in "simple_macropahge_model" and the second is in "athero". 
-These two models only differ by their lipid model. The first has a simple homogeneous IC for lipid. The second has that lipid is secreted by ghost cells, where
+In this repository, there are two agent-based models (ABMs) built in [PhysiCell](http://physicell.org/) for atherosclerotic plaque developement. The first is in "simple_macropahge_model" and the second is in "athero". These two models only differ by their lipid model. The first has a simple homogeneous IC for lipid. The second has that lipid is secreted by ghost cells, where
 secretion is a function of the distance from the top boundary, i.e. cells secrete lipid the further they are from the blood. 
 
 To run the models in PhysiCell, download the "simple_macrophage_model" folder and "athero" folder and save in the "sample_projects" folder. 
