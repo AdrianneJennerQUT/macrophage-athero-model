@@ -12,8 +12,7 @@ This code accompanies the manuscript *"Investigating atherosclerotic plaque deve
 In this repository, there are two agent-based models (ABMs) built in [PhysiCell](http://physicell.org/) for atherosclerotic plaque developement. The first is in "simple_macropahge_model" and the second is in "athero". These two models only differ by their lipid model. The first has a simple homogeneous IC for lipid. The second has that lipid is secreted by ghost cells, where
 secretion is a function of the distance from the top boundary, i.e. cells secrete lipid the further they are from the blood. 
 
-To run the models in PhysiCell, download the "simple_macrophage_model" folder and "athero" folder and save in the "sample_projects" folder. 
-Then download "Makefile-default" and save in the "sample_projects folder" overwriting the current version in this folder
+To run the models in PhysiCell, first download PhysiCell, following the instructions and tutorials on the PhysiCell website http://physicell.org/. This code runs in V.1.13.1. Once PhysiCell is installed, download the "simple_macrophage_model" folder and "athero" folder and save them in the "sample_projects" folder. Then download "Makefile-default" and save in the "sample_projects folder" overwriting the current version in this folder
 
 To run the first model, open your command line and change directory into the PhysiCell folder, then run: 
 
