@@ -38,4 +38,4 @@ if on windows, then type
 if on mac, then type
 ./athero
 
-Download the matlab scripts and save in the "matlab" folder in the main PhysiCell branch. 
+Download the matlab scripts and save in the "matlab" folder in the main PhysiCell branch. Some of these scripts will depend on loading saved compiled versions of multiple simulations which have not been uploaded here, but can be shared. Email adrianne.jenner@qut.edu.au
