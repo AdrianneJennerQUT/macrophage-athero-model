@@ -6,7 +6,7 @@ A3 = '../output/output00000';
 A4 = '../output/output0000'; 
 B = '.xml';
 
-total_time = 1140;
+total_time = 1440; %1140 on sensitivity runes
 delta_t_cell = 6;
 
 for tcount = 1:total_time
@@ -42,6 +42,14 @@ internal_lipid(tcount) = sum(MCDS.discrete_cells.custom.internalized_total_subst
 
 end
 
+if deadcells(end)>mac_C1(end)+mac_C2(end)
+    plaque = 1;
+else
+    plaque = 0;
+end
+
+save('output1_ma_0003_plin_01_v9.mat','mac_C1','mac_C2','deadcells','plaque')
+
 %%
 
 time = [1:total_time]*delta_t_cell;
@@ -70,4 +78,7 @@ hold on
 plot(time, internal_lipid./(mac_C1+mac_C2+deadcells),'LineWidth',2)
 ylabel('Avg. internal lipid')
 set(gca,'FontSize',14)
+
+%%
+
 
