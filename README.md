@@ -38,4 +38,4 @@ if on windows, then type
 if on mac, then type
 ./athero
 
-Download the matlab script to plot the video of the microenvironment and save in the "matlab" folder in the main PhysiCell branch.
+Download the matlab scripts and save in the "matlab" folder in the main PhysiCell branch. 
